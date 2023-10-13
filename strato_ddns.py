@@ -36,6 +36,9 @@ class strato_ddns:
         self.ipv6_netmask = 64
         self.nameservers = ['8.8.8.8', '8.8.4.4', '2001:4860:4860::8888', '2001:4860:4860::8844']
 
+        self.ipv4_check_url = 'http://ipv4.ident.me'
+        self.ipv6_check_url = 'http://ipv6.ident.me'
+
         # read config
         self.read_config(config_path=config_path)
 
@@ -139,6 +142,10 @@ class strato_ddns:
                         if value < 0 or value > 128:
                             raise ValueError("Netmask out of valid values")
                         self.ipv6_netmask = value
+                    elif option == "ipv6_url":
+                        self.ipv6_check_url = value
+                    elif option == "ipv4_url":
+                        self.ipv4_check_url = value
                     else:
                         # unexpected arguments in configuration
                         raise Exception("invalid configuration")
@@ -176,7 +183,7 @@ class strato_ddns:
                 # if ipv4==web -> lookup real ip, else use static
                 if self.ipv4 == "web":
                     try:
-                        self.ipv4_real = urllib.request.urlopen('http://ipv4.ident.me').read().decode('utf8')
+                        self.ipv4_real = urllib.request.urlopen(self.ipv4_check_url).read().decode('utf8')
                     except:
                         if self.debug:
                             print("Could not get real IPv6 address, using looked up IPv6...")
@@ -202,7 +209,7 @@ class strato_ddns:
                 if self.debug: print("Resolved domain", d, "to IPv6\t", self.ipv6_dns)
                 if self.ipv6 == "web":
                     try:
-                        self.ipv6_real = urllib.request.urlopen('http://ipv6.ident.me').read().decode('utf8')
+                        self.ipv6_real = urllib.request.urlopen(self.ipv6_check_url).read().decode('utf8')
                     except:
                         if self.debug:
                             print("Could not get real IPv6 address, using looked up IPv6...")
